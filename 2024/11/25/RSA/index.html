@@ -1,0 +1,307 @@
+<!DOCTYPE html><html lang="en" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>RSA-大礼包 | coop</title><meta name="author" content="Cool-chicken"><meta name="copyright" content="Cool-chicken"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="解密过程 我们需要批量读取文件，并且分析每个帧内1024bit模数N | 1024bit加密指数e | 1024bit密文mem^{e}me mod N是否存在相互关系 1234import osfrom pyexpat.errors import messagesimport gmpy2 首先我们设置4个列表，分别存储N，e，c，m 12345n_list &#x3D; &#123;&#125;e_lis">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RSA-大礼包">
+<meta property="og:url" content="https://coopbb8.icu/2024/11/25/RSA/index.html">
+<meta property="og:site_name" content="coop">
+<meta property="og:description" content="解密过程 我们需要批量读取文件，并且分析每个帧内1024bit模数N | 1024bit加密指数e | 1024bit密文mem^{e}me mod N是否存在相互关系 1234import osfrom pyexpat.errors import messagesimport gmpy2 首先我们设置4个列表，分别存储N，e，c，m 12345n_list &#x3D; &#123;&#125;e_lis">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://coopbb8.icu/img/cat.gif">
+<meta property="article:published_time" content="2024-11-25T09:50:30.000Z">
+<meta property="article:modified_time" content="2024-11-29T13:23:07.437Z">
+<meta property="article:author" content="Cool-chicken">
+<meta property="article:tag" content="密码学实验">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://coopbb8.icu/img/cat.gif"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="https://coopbb8.icu/2024/11/25/RSA/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css"><script>
+    (() => {
+      
+    const saveToLocal = {
+      set: (key, value, ttl) => {
+        if (!ttl) return
+        const expiry = Date.now() + ttl * 86400000
+        localStorage.setItem(key, JSON.stringify({ value, expiry }))
+      },
+      get: key => {
+        const itemStr = localStorage.getItem(key)
+        if (!itemStr) return undefined
+        const { value, expiry } = JSON.parse(itemStr)
+        if (Date.now() > expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return value
+      }
+    }
+
+    window.btf = {
+      saveToLocal,
+      getScript: (url, attr = {}) => new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.src = url
+        script.async = true
+        Object.entries(attr).forEach(([key, val]) => script.setAttribute(key, val))
+        script.onload = script.onreadystatechange = () => {
+          if (!script.readyState || /loaded|complete/.test(script.readyState)) resolve()
+        }
+        script.onerror = reject
+        document.head.appendChild(script)
+      }),
+      getCSS: (url, id) => new Promise((resolve, reject) => {
+        const link = document.createElement('link')
+        link.rel = 'stylesheet'
+        link.href = url
+        if (id) link.id = id
+        link.onload = link.onreadystatechange = () => {
+          if (!link.readyState || /loaded|complete/.test(link.readyState)) resolve()
+        }
+        link.onerror = reject
+        document.head.appendChild(link)
+      }),
+      addGlobalFn: (key, fn, name = false, parent = window) => {
+        if (!false && key.startsWith('pjax')) return
+        const globalFn = parent.globalFn || {}
+        globalFn[key] = globalFn[key] || {}
+        if (name && globalFn[key][name]) return
+        globalFn[key][name || Object.keys(globalFn[key]).length] = fn
+        parent.globalFn = globalFn
+      }
+    }
+  
+      
+      const activateDarkMode = () => {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      const activateLightMode = () => {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+
+      btf.activateDarkMode = activateDarkMode
+      btf.activateLightMode = activateLightMode
+
+      const theme = saveToLocal.get('theme')
+    
+          theme === 'dark' ? activateDarkMode() : theme === 'light' ? activateLightMode() : null
+        
+      
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        document.documentElement.classList.toggle('hide-aside', asideStatus === 'hide')
+      }
+    
+      
+    const detectApple = () => {
+      if (/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)) {
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+  
+    })()
+  </script><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"No results found for: ${query}","hits_stats":"${hits} articles found"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlight.js","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false,"highlightFullpage":false,"highlightMacStyle":false},
+  copy: {
+    success: 'Copy Successful',
+    error: 'Copy Failed',
+    noSupport: 'Browser Not Supported'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: 'Just now',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'null',
+  Snackbar: undefined,
+  infinitegrid: {
+    js: 'https://cdn.jsdelivr.net/npm/@egjs/infinitegrid/dist/infinitegrid.min.js',
+    buttonText: 'Load More'
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: false,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'RSA-大礼包',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2024-11-29 21:23:07'
+}</script><meta name="generator" content="Hexo 7.3.0"></head><body><div id="web_bg" style="background-image: url(/img/bg.jpg);"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/leaf.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url(/img/cat.gif);"><nav id="nav"><span id="blog-info"><a class="nav-site-title" href="/"><img class="site-icon" src="/img/logo.png" alt="Logo"><span class="site-name">coop</span></a><a class="nav-page-title" href="/"><span class="site-name">RSA-大礼包</span></a></span><div id="menus"><div id="search-button"><span class="site-page social-icon search"><i class="fas fa-search fa-fw"></i><span> Search</span></span></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> 标签</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/link/"><i class="fa-fw fas fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><span class="site-page"><i class="fas fa-bars fa-fw"></i></span></div></div></nav><div id="post-info"><h1 class="post-title">RSA-大礼包</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2024-11-25T09:50:30.000Z" title="Created 2024-11-25 17:50:30">2024-11-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2024-11-29T13:23:07.437Z" title="Updated 2024-11-29 21:23:07">2024-11-29</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title=""><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post Views:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="解密过程">解密过程</h3>
+<p>我们需要批量读取文件，并且分析每个帧内1024bit模数N | 1024bit加密指数e | 1024bit密文<span class="katex"><span class="katex-mathml"><math xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msup><mi>m</mi><mi>e</mi></msup></mrow><annotation encoding="application/x-tex">m^{e}</annotation></semantics></math></span><span class="katex-html" aria-hidden="true"><span class="base"><span class="strut" style="height:0.6644em;"></span><span class="mord"><span class="mord mathnormal">m</span><span class="msupsub"><span class="vlist-t"><span class="vlist-r"><span class="vlist" style="height:0.6644em;"><span style="top:-3.063em;margin-right:0.05em;"><span class="pstrut" style="height:2.7em;"></span><span class="sizing reset-size6 size3 mtight"><span class="mord mtight"><span class="mord mathnormal mtight">e</span></span></span></span></span></span></span></span></span></span></span></span> mod N是否存在相互关系</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> pyexpat.errors <span class="keyword">import</span> messages</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> gmpy2</span><br></pre></td></tr></table></figure>
+<p>首先我们设置4个列表，分别存储N，e，c，m</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">n_list = &#123;&#125;</span><br><span class="line">e_list = &#123;&#125;</span><br><span class="line">c_list = &#123;&#125;</span><br><span class="line">m_list = &#123;&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>其次我们需要读取文件，然后分析每个帧内的N，e，c，m</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">read_file</span>():</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">21</span>):</span><br><span class="line">        filename = <span class="string">f&#x27;Frame<span class="subst">&#123;i&#125;</span>&#x27;</span></span><br><span class="line">        <span class="keyword">with</span> <span class="built_in">open</span>(filename, <span class="string">&#x27;r&#x27;</span>) <span class="keyword">as</span> f:</span><br><span class="line">            n = <span class="built_in">int</span>(f.read(<span class="number">256</span>).strip(), <span class="number">16</span>)</span><br><span class="line">            n_list[i] = n</span><br><span class="line">            e = <span class="built_in">int</span>(f.read(<span class="number">256</span>).strip(), <span class="number">16</span>)</span><br><span class="line">            e_list[i] = e</span><br><span class="line">            c = <span class="built_in">int</span>(f.read(<span class="number">256</span>).strip(), <span class="number">16</span>)</span><br><span class="line">            c_list[i] = c</span><br></pre></td></tr></table></figure>
+<p>分析是否有相同的参数e和N</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    read_file()</span><br><span class="line">    <span class="comment"># 输出e</span></span><br><span class="line">    <span class="keyword">for</span> i, e_1 <span class="keyword">in</span> e_list.items():</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&#x27;e<span class="subst">&#123;i&#125;</span>:<span class="subst">&#123;e_1&#125;</span>&#x27;</span>.<span class="built_in">format</span>(i, e_1))</span><br><span class="line">    <span class="comment"># 输出相同的n</span></span><br><span class="line">    <span class="keyword">for</span> i, n_1 <span class="keyword">in</span> n_list.items():</span><br><span class="line">        <span class="keyword">for</span> j, n_2 <span class="keyword">in</span> n_list.items():</span><br><span class="line">            <span class="keyword">if</span> i &lt; j <span class="keyword">and</span> n_1 == n_2:</span><br><span class="line">                <span class="built_in">print</span>(<span class="string">f&#x27;n<span class="subst">&#123;i&#125;</span> = n<span class="subst">&#123;j&#125;</span> = <span class="subst">&#123;n_1&#125;</span>&#x27;</span>.<span class="built_in">format</span>(i, j, n_1))</span><br></pre></td></tr></table></figure>
+<pre><code>e0:46786465362686334917265996843779843233606992585424976481745055335468678697948774988450305612127967926533923268260412557000125153569622340353246096040604284883505587337829322949633637609180797447754513992039018904786537115087888005528547900640339270052628915440787357271345416818313808448127098885767015748889
+e1:65537
+e2:65537
+e3:5
+e4:152206992575706893484835984472544529509325440944131662631741403414037956695665533186650071476146389737020554215956181827422540843366433981607643940546405002217220286072880967331118344806315756304650248634546597784597963886656422706197757265316981889118026978865295597135470735576032282694348773714479076093197
+e5:65537
+e6:65537
+e7:3
+e8:5
+e9:65537
+e10:65537
+e11:3
+e12:5
+e13:65537
+e14:65537
+e15:3
+e16:5
+e17:65537
+e18:65537
+e19:65537
+e20:5
+n0 = n4 = 90058705186558569935261948496132914380077312570281980020033760044382510933070450931241348678652103772768114420567119848142360867111065753301402088676701668212035175754850951897103338079978959810673297215370534716084813732883918187890434411552463739669878295417744080700424913250020348487161014643951785502867
+</code></pre>
+<p>我们发现第0帧和第4帧的n值相同并且e是互素的，根据题目所知，Alice初步发送的时候会重复发送相同明文分片。接下来我们假设他们加密的是相同的密文。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">same_N</span>(<span class="params">c1, c2, e1, e2, n</span>):</span><br><span class="line">    g, s, t = gmpy2.gcdext(e1, e2)</span><br><span class="line">    <span class="keyword">if</span> g != <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">    m = gmpy2.powmod(c1,s,n) * gmpy2.powmod(c2,t,n) % n</span><br><span class="line">    <span class="keyword">return</span> m</span><br><span class="line">m = same_N(c_list[<span class="number">0</span>], c_list[<span class="number">4</span>], e_list[<span class="number">0</span>], e_list[<span class="number">4</span>], n_list[<span class="number">0</span>])</span><br><span class="line">byte = <span class="built_in">bytes</span>.fromhex(<span class="built_in">hex</span>(m)[-<span class="number">16</span>:]).decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;0和4的明文是：<span class="subst">&#123;byte&#125;</span>&#x27;</span>)</span><br><span class="line">m_list[<span class="number">0</span>] = m_list[<span class="number">4</span>] = byte</span><br></pre></td></tr></table></figure>
+<pre><code>0和4的明文是：My secre
+</code></pre>
+<p>然后我们发现第3，8，12，16，20帧的e均为5相对较小，根据题目所知，Alice初步发送的时候会重复发送相同明文分片。接下来我们假设他们加密的是相同的密文。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">crt</span>(<span class="params">a,m</span>):</span><br><span class="line">    M = <span class="number">1</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> m:</span><br><span class="line">        M *= i</span><br><span class="line">    Mi = [M//i <span class="keyword">for</span> i <span class="keyword">in</span> m]</span><br><span class="line">    Mi_ = [gmpy2.invert(M//i, i) <span class="keyword">for</span> i <span class="keyword">in</span> m]</span><br><span class="line">    x = <span class="number">0</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="built_in">len</span>(m)):</span><br><span class="line">        x += a[i]*Mi[i]*Mi_[i]</span><br><span class="line">    <span class="keyword">return</span> x % M</span><br></pre></td></tr></table></figure>
+<p>根据中国剩余定理，我们可以解出密文m，再对答案求5次方根得到明文</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">c5_list = [c_list[<span class="number">3</span>], c_list[<span class="number">8</span>], c_list[<span class="number">12</span>], c_list[<span class="number">16</span>], c_list[<span class="number">20</span>]]</span><br><span class="line">n5_list = [n_list[<span class="number">3</span>], n_list[<span class="number">8</span>], n_list[<span class="number">12</span>], n_list[<span class="number">16</span>], n_list[<span class="number">20</span>]]</span><br><span class="line">m = crt(c5_list, n5_list)</span><br><span class="line">m = gmpy2.iroot(m, <span class="number">5</span>)[<span class="number">0</span>]</span><br><span class="line">byte = <span class="built_in">bytes</span>.fromhex(<span class="built_in">hex</span>(m)[-<span class="number">16</span>:]).decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;3，8，12，16，20的明文是：<span class="subst">&#123;byte&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">3</span>, <span class="number">8</span>, <span class="number">12</span>, <span class="number">16</span>, <span class="number">20</span>]:</span><br><span class="line">    m_list[i] = byte</span><br></pre></td></tr></table></figure>
+<pre><code>3，8，12，16，20的明文是：t is a f
+</code></pre>
+<p>接下来我们来探寻N里面是否有不相同且不互素的情况，这样就能够求出相应的大素数p和q。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i, n_1 <span class="keyword">in</span> n_list.items():</span><br><span class="line">    <span class="keyword">for</span> j, n_2 <span class="keyword">in</span> n_list.items():</span><br><span class="line">        <span class="keyword">if</span> i &lt; j <span class="keyword">and</span> gmpy2.gcd(n_1, n_2) != <span class="number">1</span> <span class="keyword">and</span> n_1 != n_2:</span><br><span class="line">            <span class="built_in">print</span>(<span class="string">f&#x27;n<span class="subst">&#123;i&#125;</span>和n<span class="subst">&#123;j&#125;</span>不相同且不互素&#x27;</span>)</span><br></pre></td></tr></table></figure>
+<pre><code>n1和n18不相同且不互素
+</code></pre>
+<p>考虑到n1和n18不互素，这样就能够求出相应的大素数p和q然后计算出d1和d18私钥进行解密</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">decrypt</span>(<span class="params">c1, c2, e1, e2, n1, n2</span>):</span><br><span class="line">    p = gmpy2.gcd(n1, n2)</span><br><span class="line">    q1 = n1 // p</span><br><span class="line">    q2 = n2 // p</span><br><span class="line">    d1 = gmpy2.invert(e1, (p-<span class="number">1</span>)*(q1-<span class="number">1</span>))</span><br><span class="line">    d2 = gmpy2.invert(e2, (p-<span class="number">1</span>)*(q2-<span class="number">1</span>))</span><br><span class="line">    m1 = gmpy2.powmod(c1, d1, n1)</span><br><span class="line">    m2 = gmpy2.powmod(c2, d2, n2)</span><br><span class="line">    <span class="keyword">return</span> m1, m2</span><br></pre></td></tr></table></figure>
+<p>以上函数编写的是解密函数，接下来我们调用函数进行解密</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">m1, m18 = decrypt(c_list[<span class="number">1</span>], c_list[<span class="number">18</span>], e_list[<span class="number">1</span>], e_list[<span class="number">18</span>], n_list[<span class="number">1</span>], n_list[<span class="number">18</span>])</span><br><span class="line">byte1 = <span class="built_in">bytes</span>.fromhex(<span class="built_in">hex</span>(m1)[-<span class="number">16</span>:]).decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">byte18 = <span class="built_in">bytes</span>.fromhex(<span class="built_in">hex</span>(m18)[-<span class="number">16</span>:]).decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;1的明文是：<span class="subst">&#123;byte1&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;18的明文是：<span class="subst">&#123;byte18&#125;</span>&#x27;</span>)</span><br><span class="line">m_list[<span class="number">1</span>] = byte1</span><br><span class="line">m_list[<span class="number">18</span>] = byte18</span><br></pre></td></tr></table></figure>
+<pre><code>1的明文是：. Imagin
+18的明文是：m A to B
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i, byte <span class="keyword">in</span> m_list.items():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;明文<span class="subst">&#123;i&#125;</span>:<span class="subst">&#123;byte&#125;</span>&#x27;</span>.<span class="built_in">format</span>(i, byte))</span><br></pre></td></tr></table></figure>
+<pre><code>明文0:My secre
+明文4:My secre
+明文3:t is a f
+明文8:t is a f
+明文12:t is a f
+明文16:t is a f
+明文20:t is a f
+明文1:. Imagin
+明文18:m A to B
+</code></pre>
+<p>对于帧10和帧14我们可以运用费马分解来分解大整数N得到素数p和q，然后计算出私钥d进行解密</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">fermat</span>(<span class="params">n</span>):  <span class="comment"># 费马分解n为p、q</span></span><br><span class="line">    a = gmpy2.isqrt(n)+<span class="number">1</span></span><br><span class="line">    <span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">        b = gmpy2.isqrt(a * a - n)</span><br><span class="line">        <span class="keyword">if</span> n == (a + b) * (a - b):</span><br><span class="line">            <span class="keyword">return</span> a + b, a - b</span><br><span class="line">        a += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">10</span>,<span class="number">14</span>]:</span><br><span class="line">    p, q = fermat(n_list[i])</span><br><span class="line">    d = gmpy2.invert(e_list[i], (p - <span class="number">1</span>) * (q - <span class="number">1</span>))</span><br><span class="line">    m = gmpy2.powmod(c_list[i], d, n_list[i])</span><br><span class="line">    byte = <span class="built_in">bytes</span>.fromhex(<span class="built_in">hex</span>(m)[-<span class="number">16</span>:]).decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;i&#125;</span>的明文是：<span class="subst">&#123;byte&#125;</span>&#x27;</span>)</span><br><span class="line">    m_list[i] = byte</span><br></pre></td></tr></table></figure>
+<pre><code>10的明文是：will get
+14的明文是： you fro
+</code></pre>
+<p>对于帧2,6,19可以利用pollard_rho算法进行分解大整数N得到素数p和q，然后计算出私钥d进行解密</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">pollard_rho</span>(<span class="params">n</span>):</span><br><span class="line">    x = <span class="number">2</span></span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">2</span>, <span class="number">1000000</span>):</span><br><span class="line">        x = <span class="built_in">pow</span>(x, i, n)</span><br><span class="line">        y = gmpy2.gcd(x-<span class="number">1</span>, n)</span><br><span class="line">        <span class="keyword">if</span> y != <span class="number">1</span> <span class="keyword">and</span> y != n:</span><br><span class="line">            <span class="keyword">return</span> y</span><br></pre></td></tr></table></figure>
+<p>接下来我们调用函数进行解密</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> [<span class="number">2</span>, <span class="number">6</span>, <span class="number">19</span>]:</span><br><span class="line">    p = pollard_rho(n_list[i])</span><br><span class="line">    q = n_list[i] // p</span><br><span class="line">    d = gmpy2.invert(e_list[i], (p - <span class="number">1</span>) * (q - <span class="number">1</span>))</span><br><span class="line">    m = gmpy2.powmod(c_list[i], d, n_list[i])</span><br><span class="line">    byte = <span class="built_in">bytes</span>.fromhex(<span class="built_in">hex</span>(m)[-<span class="number">16</span>:]).decode(<span class="string">&#x27;utf-8&#x27;</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;i&#125;</span>的明文是：<span class="subst">&#123;byte&#125;</span>&#x27;</span>)</span><br><span class="line">    m_list[i] = byte</span><br></pre></td></tr></table></figure>
+<pre><code>2的明文是： That is
+6的明文是： &quot;Logic 
+19的明文是：instein.
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">for</span> i, byte <span class="keyword">in</span> m_list.items():</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;明文<span class="subst">&#123;i&#125;</span>:<span class="subst">&#123;byte&#125;</span>&#x27;</span>.<span class="built_in">format</span>(i, byte))</span><br></pre></td></tr></table></figure>
+<pre><code>明文0:My secre
+明文4:My secre
+明文3:t is a f
+明文8:t is a f
+明文12:t is a f
+明文16:t is a f
+明文20:t is a f
+明文1:. Imagin
+明文18:m A to B
+明文10:will get
+明文14: you fro
+明文2: That is
+明文6: &quot;Logic 
+明文19:instein.
+</code></pre>
+<p>通过这些帧的明文我们能够猜出明文是b’My secret is a famous saying of Albert Einstein. That is “Logic will get you from A to B. Imagination will take you everywhere.”’</p>
+<h3 id="实验总结">实验总结</h3>
+<p>本次实验我充分了解了RSA算法的运行过程，并且更加熟悉了运用公钥和私钥加解密的程序编写。本实验运用了各种常用的破解RSA密码的方法，让我对共模攻击、低加密密指数攻击、低解密指数攻击、因数碰撞攻击、随机数发生器攻击、coppersmith等方法有了更详细的了解。</p>
+<h3 id="参考文献">参考文献</h3>
+<ol>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/guyanqiuqiu/article/details/139724480?fromshare=blogdetail&amp;sharetype=blogdetail&amp;sharerId=139724480&amp;sharerefer=PC&amp;sharesource=Rachelbb8&amp;sharefrom=from_link">https://blog.csdn.net/guyanqiuqiu/article/details/139724480?fromshare=blogdetail&amp;sharetype=blogdetail&amp;sharerId=139724480&amp;sharerefer=PC&amp;sharesource=Rachelbb8&amp;sharefrom=from_link</a></li>
+<li><a target="_blank" rel="noopener" href="https://blog.csdn.net/PrimiHub/article/details/139853734?fromshare=blogdetail&amp;sharetype=blogdetail&amp;sharerId=139853734&amp;sharerefer=PC&amp;sharesource=Rachelbb8&amp;sharefrom=from_link">https://blog.csdn.net/PrimiHub/article/details/139853734?fromshare=blogdetail&amp;sharetype=blogdetail&amp;sharerId=139853734&amp;sharerefer=PC&amp;sharesource=Rachelbb8&amp;sharefrom=from_link</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.tr0y.wang/2017/11/06/CTFRSA/#%E5%A4%A7%E6%95%B0%E5%88%86%E8%A7%A3%E7%AE%97%E6%B3%95">https://www.tr0y.wang/2017/11/06/CTFRSA/#大数分解算法</a></li>
+</ol>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta"><i class="fas fa-circle-user fa-fw"></i>Author: </span><span class="post-copyright-info"><a href="https://coopbb8.icu">Cool-chicken</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta"><i class="fas fa-square-arrow-up-right fa-fw"></i>Link: </span><span class="post-copyright-info"><a href="https://coopbb8.icu/2024/11/25/RSA/">https://coopbb8.icu/2024/11/25/RSA/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta"><i class="fas fa-circle-exclamation fa-fw"></i>Copyright Notice: </span><span class="post-copyright-info">All articles on this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless otherwise stated.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6%E5%AE%9E%E9%AA%8C/">密码学实验</a></div><div class="post-share"><div class="social-share" data-image="/img/cat.gif" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><a class="prev-post pull-full" href="/2024/11/02/my-crypto-3/" title="my-crypto-3"><img class="cover" src="/img/friend_404.gif" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous</div><div class="prev_info">my-crypto-3</div></div></a></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>Related Articles</span></div><div class="relatedPosts-list"><a href="/2024/10/12/my-crypto-1/" title="my crypto-1"><img class="cover" src="/img/275082.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-12</div><div class="title">my crypto-1</div></div></a><a href="/2024/10/14/my-crypto-2/" title="my-crypto-2"><img class="cover" src="/img/14565.gif" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-10-14</div><div class="title">my-crypto-2</div></div></a><a href="/2024/11/02/my-crypto-3/" title="my-crypto-3"><img class="cover" src="/img/friend_404.gif" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2024-11-02</div><div class="title">my-crypto-3</div></div></a></div></div><hr class="custom-hr"/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> Comments</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info is-center"><div class="avatar-img"><img src="/img/leaf.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info-name">Cool-chicken</div><div class="author-info-description">a blog about fun things</div><div class="site-data"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">5</div></a><a href="/tags/"><div class="headline">Tags</div><div class="length-num">1</div></a><a href="/categories/"><div class="headline">Categories</div><div class="length-num">0</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/cool-chicken"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons"><a class="social-icon" href="https://github.com/cool-chicken" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="mailto:wur39638@gmail.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>Announcement</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Contents</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%A3%E5%AF%86%E8%BF%87%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">解密过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E6%80%BB%E7%BB%93"><span class="toc-number">2.</span> <span class="toc-text">实验总结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E8%80%83%E6%96%87%E7%8C%AE"><span class="toc-number">3.</span> <span class="toc-text">参考文献</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Posts</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2024/11/25/RSA/" title="RSA-大礼包"><img src="/img/cat.gif" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RSA-大礼包"/></a><div class="content"><a class="title" href="/2024/11/25/RSA/" title="RSA-大礼包">RSA-大礼包</a><time datetime="2024-11-25T09:50:30.000Z" title="Created 2024-11-25 17:50:30">2024-11-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/11/02/my-crypto-3/" title="my-crypto-3"><img src="/img/friend_404.gif" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="my-crypto-3"/></a><div class="content"><a class="title" href="/2024/11/02/my-crypto-3/" title="my-crypto-3">my-crypto-3</a><time datetime="2024-11-02T07:50:30.000Z" title="Created 2024-11-02 15:50:30">2024-11-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/14/my-crypto-2/" title="my-crypto-2"><img src="/img/14565.gif" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="my-crypto-2"/></a><div class="content"><a class="title" href="/2024/10/14/my-crypto-2/" title="my-crypto-2">my-crypto-2</a><time datetime="2024-10-14T07:34:33.000Z" title="Created 2024-10-14 15:34:33">2024-10-14</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/10/12/hello-world/" title="Hello World">Hello World</a><time datetime="2024-10-12T14:10:49.883Z" title="Created 2024-10-12 22:10:49">2024-10-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/10/12/my-crypto-1/" title="my crypto-1"><img src="/img/275082.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="my crypto-1"/></a><div class="content"><a class="title" href="/2024/10/12/my-crypto-1/" title="my crypto-1">my crypto-1</a><time datetime="2024-10-12T09:48:04.000Z" title="Created 2024-10-12 17:48:04">2024-10-12</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2024 By Cool-chicken</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div><div class="footer_custom_text">WelcOme to coOl-cHickeN's cRoOp o(^▽^)O</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Reading Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light and Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle Between Single-column and Double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside-config" type="button" title="Settings"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table of Contents"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="Scroll to Comments"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="Back to Top"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"><script>(async () => {
+  const showKatex = () => {
+    document.querySelectorAll('#article-container .katex').forEach(el => el.classList.add('katex-show'))
+  }
+
+  if (!window.katex_js_css) {
+    window.katex_js_css = true
+    await btf.getCSS('https://cdn.jsdelivr.net/npm/katex/dist/katex.min.css')
+    if (false) {
+      await btf.getScript('https://cdn.jsdelivr.net/npm/katex/dist/contrib/copy-tex.min.js')
+    }
+  }
+
+  showKatex()
+})()</script><script>(() => {
+  const initGitalk = () => {
+    const gitalk = new Gitalk(Object.assign({
+      //clientID: '',
+      //clientSecret: '',
+      clientID: 'Ov23li9leJZqtNDz6ePM',
+      clientSecret: '4483ac43f2e8752f7d21f9166f4580bff39b648a',
+      repo: 'Gitalk-comment',
+      owner: 'cool-chicken',
+      admin: ['cool-chicken'],
+      id: 'cca2314216247d99a173e97d33c68ce6',
+      updateCountCallback: commentCount
+    },null))
+
+    gitalk.render('gitalk-container')
+  }
+
+  const loadGitalk = async() => {
+    if (typeof Gitalk === 'function') initGitalk()
+    else {
+      await btf.getCSS('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css')
+      await btf.getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js')
+      initGitalk()
+    }
+  }
+  
+  const commentCount = n => {
+    const isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+    if (isCommentCount) {
+      isCommentCount.textContent= n
+    }
+  }
+
+  if ('Gitalk' === 'Gitalk' || !false) {
+    if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+    else loadGitalk()
+  } else {
+    window.loadOtherComment = loadGitalk
+  }
+})()</script></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">Search</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  Loading Database</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="Search for Posts" type="text"/></div></div><hr/><div id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
